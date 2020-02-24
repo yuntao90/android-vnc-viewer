@@ -80,4 +80,5 @@
 <string name="use_wake_lock_check">Use Wake Lock</string>
 <string name="username_caption">Username</string>
 <string name="username_hint">For Windows Authentication</string>
+    <string name="input_mode_adjust_fullscreen">Adjust Fullscreen</string>
 </resources>

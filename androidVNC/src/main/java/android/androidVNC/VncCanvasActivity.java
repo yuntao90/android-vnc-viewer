@@ -50,6 +50,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -520,8 +521,8 @@ public class VncCanvasActivity extends Activity {
 
 		super.onCreate(icicle);
 		// requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		//		WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		database = new VncDatabase(this);
 
@@ -655,23 +656,16 @@ public class VncCanvasActivity extends Activity {
 		});
 		panner = new Panner(this, vncCanvas.handler);
 
-		inputHandler = getInputHandlerById(R.id.itemInputFitToScreen);
-		//vncCanvas.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+		inputHandler = getInputHandlerById(R.id.itemInputMouse);
+		/*
+		// May not stable. Currently not open.
+		vncCanvas.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_IMMERSIVE);*/
 	}
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (getActionBar() != null && vncCanvas != null) {
-            vncCanvas.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    vncCanvas.setActionBarHeight(getActionBar().getHeight());
-                }
-            }, 500);
-        }
-    }
 
 	/**
 	 * Set modes on start to match what is specified in the ConnectionBean;
@@ -680,8 +674,12 @@ public class VncCanvasActivity extends Activity {
 	void setModes() {
 		AbstractInputHandler handler = getInputHandlerByName(connection
 				.getInputMode());
-		AbstractScaling.getByScaleType(connection.getScaleMode())
-				.setScaleTypeForActivity(this);
+		ImageView.ScaleType scaleType = ScaleType.FIT_CENTER;
+		if (connection.getScaleModeAsString() != null) {
+			scaleType = connection.getScaleMode();
+		}
+		AbstractScaling.getByScaleType(scaleType).setScaleTypeForActivity(this);
+
 		this.inputHandler = handler;
 		showPanningState();
 		if (connection.getScaleMode()==ScaleType.MATRIX && connection.getUseImmersive())
@@ -725,6 +723,14 @@ public class VncCanvasActivity extends Activity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		// ignore orientation/keyboard change
 		super.onConfigurationChanged(newConfig);
+
+		// If orientation changed, update scaling and more parameters.
+		vncCanvas.post(new Runnable() {
+			@Override
+			public void run() {
+				setModes();
+			}
+		});
 	}
 	
 	@Override
@@ -753,9 +759,6 @@ public class VncCanvasActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.vnccanvasactivitymenu, menu);
 
-		if (vncCanvas.scaling != null)
-			menu.findItem(vncCanvas.scaling.getId()).setChecked(true);
-
 		Menu inputMenu = menu.findItem(R.id.itemInputMode).getSubMenu();
 
 		inputModeMenuItems = new MenuItem[inputModeIds.length];
@@ -767,6 +770,17 @@ public class VncCanvasActivity extends Activity {
 				connection.getFollowMouse());
 		menu.findItem(R.id.itemFollowPan).setChecked(connection.getFollowPan());
 		return true;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		if (vncCanvas.scaling != null) {
+			MenuItem item = menu.findItem(vncCanvas.scaling.getId());
+			if (item != null) {
+				item.setChecked(true);
+			}
+		}
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 	/**
@@ -837,7 +851,7 @@ public class VncCanvasActivity extends Activity {
 			}
 		}
 		if (result == null) {
-			result = getInputHandlerById(R.id.itemInputTouchPanZoomMouse);
+			result = getInputHandlerById(R.id.itemInputMouse);
 		}
 		return result;
 	}
@@ -867,6 +881,7 @@ public class VncCanvasActivity extends Activity {
 		case R.id.itemZoomable:
 		case R.id.itemOneToOne:
 		case R.id.itemFitToScreen:
+		case R.id.itemFullScreen:
 			AbstractScaling.getById(item.getItemId()).setScaleTypeForActivity(
 					this);
 			item.setChecked(true);

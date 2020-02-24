@@ -119,7 +119,6 @@ public class VncCanvas extends ImageView {
 	private MouseScrollRunnable scrollRunnable;
 	
 	private Paint handleRREPaint;
-	private float mActionBarHeight;
 	/**
 	 * Position of the top left portion of the <i>visible</i> part of the screen, in
 	 * full-frame coordinates
@@ -208,10 +207,6 @@ public class VncCanvas extends ImageView {
 			}
 		};
 		t.start();
-	}
-
-	void setActionBarHeight(int height) {
-		mActionBarHeight = height;
 	}
 
 	void connectAndAuthenticate(String us,String pw) throws Exception {
@@ -474,7 +469,10 @@ public class VncCanvas extends ImageView {
 			wakeLock = null;
 		}
 	}
-	
+
+	// The stable memory container for getting location on screen. 0-x 1-y
+	private int[] mOutPosition = new int[2];
+
 	/**
 	 * Apply scroll offset and scaling to convert touch-space coordinates to the corresponding
 	 * point on the full frame.
@@ -486,8 +484,9 @@ public class VncCanvas extends ImageView {
 		//Log.v(TAG, String.format("tap at %f,%f", e.getX(), e.getY()));
 		float scale = getScale();
 
-		// Adjust coordinates for Android notification bar.
-		e.offsetLocation(0, -1f * (getTop() + mActionBarHeight));
+		getLocationOnScreen(mOutPosition);
+		// Adjust coordinates for Android notification bar and actionbar.
+		e.offsetLocation(0, -1f * (mOutPosition[1]));
 
 		e.setLocation((absoluteXPosition + e.getX()) / scale, (absoluteYPosition + e.getY()) / scale);
 		

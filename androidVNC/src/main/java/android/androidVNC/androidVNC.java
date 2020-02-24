@@ -163,14 +163,12 @@ public class androidVNC extends Activity {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onMenuOpened(int, android.view.Menu)
-	 */
+	// Use onPrepareOptionsMenu instead of onMenuOpen to avoid crashing.
 	@Override
-	public boolean onMenuOpened(int featureId, Menu menu) {
+	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.findItem(R.id.itemDeleteConnection).setEnabled(selected!=null && ! selected.isNew());
 		menu.findItem(R.id.itemSaveAsCopy).setEnabled(selected!=null && ! selected.isNew());
-		return true;
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 	/* (non-Javadoc)

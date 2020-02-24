@@ -73,4 +73,5 @@
 <string name="special_keys">发送键</string>
 <string name="username_caption">用户名</string>
 <string name="username_hint">针对Windows授权</string>
+    <string name="input_mode_adjust_fullscreen">适应全屏</string>
 </resources>

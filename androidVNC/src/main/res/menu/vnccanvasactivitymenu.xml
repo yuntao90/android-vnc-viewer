@@ -11,7 +11,6 @@
 	    		<item android:id="@+id/itemInputMouse" android:title="@string/input_mode_mouse"/>
 	    		<item android:id="@+id/itemInputTouchPanTrackballMouse" android:title="@string/input_mode_touchpad_pan_trackball_mouse"/>
 	    		<item android:id="@+id/itemInputDPadPanTouchMouse" android:title="@string/input_mode_dpad_pan_touchpad_mouse"/>
-	    	
 </group>
 	    </menu>
     </item>
@@ -26,8 +25,10 @@
 	    	<group android:id="@+id/groupScaling" android:checkableBehavior="single">
 	    		<item android:id="@+id/itemZoomable" android:title="@string/scaling_zoomable" />
 	    		<item android:id="@+id/itemOneToOne" android:title="@string/one_to_one"/>
-	    		<item android:id="@+id/itemFitToScreen" android:title="@string/fit_to_screen" android:checked="true"/>
-	    	</group>
+	    		<item android:id="@+id/itemFitToScreen" android:title="@string/fit_to_screen" android:visible="false"/>
+				<item android:id="@+id/itemFullScreen" android:title="@string/input_mode_adjust_fullscreen" />
+
+			</group>
     	</menu>
     </item>
     <item android:numericShortcut="8" android:alphabeticShortcut="a" android:id="@+id/itemCtrlAltDel" android:title="@string/ctrl_alt_del" android:icon="@android:drawable/ic_menu_share"/>
