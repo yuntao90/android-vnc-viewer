@@ -659,6 +659,20 @@ public class VncCanvasActivity extends Activity {
 		//vncCanvas.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 	}
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (getActionBar() != null && vncCanvas != null) {
+            vncCanvas.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    vncCanvas.setActionBarHeight(getActionBar().getHeight());
+                }
+            }, 500);
+        }
+    }
+
 	/**
 	 * Set modes on start to match what is specified in the ConnectionBean;
 	 * color mode (already done) scaling, input mode

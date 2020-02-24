@@ -119,7 +119,7 @@ public class VncCanvas extends ImageView {
 	private MouseScrollRunnable scrollRunnable;
 	
 	private Paint handleRREPaint;
-	
+	private float mActionBarHeight;
 	/**
 	 * Position of the top left portion of the <i>visible</i> part of the screen, in
 	 * full-frame coordinates
@@ -140,7 +140,6 @@ public class VncCanvas extends ImageView {
 
 	/**
 	 * Create a view showing a VNC connection
-	 * @param context Containing context (activity)
 	 * @param bean Connection settings
 	 * @param setModes Callback to run on UI thread after connection is set up
 	 */
@@ -209,6 +208,10 @@ public class VncCanvas extends ImageView {
 			}
 		};
 		t.start();
+	}
+
+	void setActionBarHeight(int height) {
+		mActionBarHeight = height;
 	}
 
 	void connectAndAuthenticate(String us,String pw) throws Exception {
@@ -482,11 +485,11 @@ public class VncCanvas extends ImageView {
 	{
 		//Log.v(TAG, String.format("tap at %f,%f", e.getX(), e.getY()));
 		float scale = getScale();
-		
-		// Adjust coordinates for Android notification bar.
-		e.offsetLocation(0, -1f * getTop());
 
-		e.setLocation(absoluteXPosition + e.getX() / scale, absoluteYPosition + e.getY() / scale);
+		// Adjust coordinates for Android notification bar.
+		e.offsetLocation(0, -1f * (getTop() + mActionBarHeight));
+
+		e.setLocation((absoluteXPosition + e.getX()) / scale, (absoluteYPosition + e.getY()) / scale);
 		
 		return e;
 	}
